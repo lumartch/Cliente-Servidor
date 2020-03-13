@@ -1,9 +1,11 @@
 package main
 
 import (
+	"container/list"
 	"encoding/gob" // golang object, json
 	"fmt"
 	"net"
+	"time"
 )
 
 type Proceso struct {
@@ -11,6 +13,26 @@ type Proceso struct {
 	Tiempo uint64
 }
 
+// Función dedicada al incremento del tiempo de los procesos dentro de una lista
+func incrementoProceso(lista list.List) {
+	for {
+		// System "Clear"
+		fmt.Print("\033[H\033[2J")
+		fmt.Println("+--------------------------------------------+")
+		fmt.Println("|                  Procesos                  |")
+		fmt.Println("+--------------------------------------------+")
+		// Ciclo que incrementa el tiempo de cada uno de los Procesos.
+		for e := lista.Front(); e != nil; e = e.Next() {
+			fmt.Println("| id:", e.Value.(Proceso).id, "                  tiempo:", e.Value.(Proceso).tiempo, "         |")
+			// Al nodo actual se le asigna un valor actualizado del proceso.
+			e.Value = Proceso{id: e.Value.(Proceso).id, tiempo: e.Value.(Proceso).tiempo + 1}
+		}
+		fmt.Println("+--------------------------------------------+")
+		time.Sleep(time.Second / 2)
+	}
+}
+
+// Función de servidor que estará escuchando para cuando se conecte un Cliente en el puerto :9999
 func server() {
 	s, err := net.Listen("tcp", ":9999")
 	if err != nil {
@@ -27,6 +49,7 @@ func server() {
 	}
 }
 
+// Función que manejará la información que sea proporcionada por el cliente
 func handleCliente(c net.Conn) {
 	var p Proceso
 	err := gob.NewDecoder(c).Decode(&p)
@@ -38,8 +61,18 @@ func handleCliente(c net.Conn) {
 }
 
 func main() {
+	// Inicialización de la lista
+	var listaProcesos list.List
+	listaProcesos.PushBack(Proceso{id: 0, tiempo: 0})
+	listaProcesos.PushBack(Proceso{id: 1, tiempo: 0})
+	listaProcesos.PushBack(Proceso{id: 2, tiempo: 0})
+	listaProcesos.PushBack(Proceso{id: 3, tiempo: 0})
+	listaProcesos.PushBack(Proceso{id: 4, tiempo: 0})
+	// Hilo de los procesos
+	go incrementoProceso(listaProcesos)
+	// Hilo del servidor
 	go server()
-
+	// Condicionante de paro
 	var input string
 	fmt.Scanln(&input)
 }
