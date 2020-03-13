@@ -23,9 +23,9 @@ func incrementoProceso(lista list.List) {
 		fmt.Println("+--------------------------------------------+")
 		// Ciclo que incrementa el tiempo de cada uno de los Procesos.
 		for e := lista.Front(); e != nil; e = e.Next() {
-			fmt.Println("| id:", e.Value.(Proceso).id, "                  tiempo:", e.Value.(Proceso).tiempo, "         |")
+			fmt.Println("| id:", e.Value.(Proceso).Id, "                  tiempo:", e.Value.(Proceso).Tiempo, "         |")
 			// Al nodo actual se le asigna un valor actualizado del proceso.
-			e.Value = Proceso{id: e.Value.(Proceso).id, tiempo: e.Value.(Proceso).tiempo + 1}
+			e.Value = Proceso{Id: e.Value.(Proceso).Id, Tiempo: e.Value.(Proceso).Tiempo + 1}
 		}
 		fmt.Println("+--------------------------------------------+")
 		time.Sleep(time.Second / 2)
@@ -63,11 +63,11 @@ func handleCliente(c net.Conn) {
 func main() {
 	// Inicialización de la lista
 	var listaProcesos list.List
-	listaProcesos.PushBack(Proceso{id: 0, tiempo: 0})
-	listaProcesos.PushBack(Proceso{id: 1, tiempo: 0})
-	listaProcesos.PushBack(Proceso{id: 2, tiempo: 0})
-	listaProcesos.PushBack(Proceso{id: 3, tiempo: 0})
-	listaProcesos.PushBack(Proceso{id: 4, tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 0, Tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 1, Tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 2, Tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 3, Tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 4, Tiempo: 0})
 	// Hilo de los procesos
 	go incrementoProceso(listaProcesos)
 	// Hilo del servidor
