@@ -41,31 +41,24 @@ func server(listaProcesos *list.List) {
 	}
 	for {
 		c, err := s.Accept()
-		if err != nil {
+		if err != nil || listaProcesos.Front() == nil {
 			fmt.Println(err)
 			continue
 		}
 		p := listaProcesos.Front().Value.(Proceso)
 		listaProcesos.Remove(listaProcesos.Front())
-		go handleCliente(c, p)
+		go handleCliente(c, p, listaProcesos)
 	}
 }
 
 // Función que manejará la información que sea proporcionada por el cliente
-func handleCliente(c net.Conn, p Proceso) {
+func handleCliente(c net.Conn, p Proceso, listaProcesos *list.List) {
 	err := gob.NewEncoder(c).Encode(&p)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	//
-	/*var p Proceso
-	err = gob.NewDecoder(c).Decode(&p)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Mensaje: ", p)
-	}*/
 	c.Close()
 }
 
@@ -77,8 +70,6 @@ func main() {
 	listaProcesos.PushBack(Proceso{Id: 2, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 3, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 4, Tiempo: 0})
-
-	//listaProcesos.Remove(listaProcesos.Front())
 	// Hilo de los procesos
 	go incrementoProceso(&listaProcesos)
 	// Hilo del servidor
