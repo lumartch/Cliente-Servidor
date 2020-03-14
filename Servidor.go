@@ -1,8 +1,8 @@
 package main
 
 import (
-	"container/list"
-	"encoding/gob" // golang object, json
+	"container/list" // golang object, json
+	"encoding/gob"
 	"fmt"
 	"net"
 	"time"
@@ -33,7 +33,7 @@ func incrementoProceso(lista list.List) {
 }
 
 // Función de servidor que estará escuchando para cuando se conecte un Cliente en el puerto :9999
-func server() {
+func server(listaProcesos list.List) {
 	s, err := net.Listen("tcp", ":9999")
 	if err != nil {
 		fmt.Println(err)
@@ -45,33 +45,39 @@ func server() {
 			fmt.Println(err)
 			continue
 		}
-		go handleCliente(c)
+		go handleCliente(c, listaProcesos)
 	}
 }
 
 // Función que manejará la información que sea proporcionada por el cliente
-func handleCliente(c net.Conn) {
-	var p Proceso
-	err := gob.NewDecoder(c).Decode(&p)
+func handleCliente(c net.Conn, listaProcesos list.List) {
+	fmt.Println("Se conecto el cliente")
+	p := Proceso{
+		Id:     10,
+		Tiempo: 100,
+	}
+	fmt.Println("Enviando... ", p)
+	err := gob.NewEncoder(c).Encode(&p)
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Println("Mensaje:", p)
+		return
 	}
+	c.Close()
+
 }
 
 func main() {
 	// Inicialización de la lista
 	var listaProcesos list.List
-	listaProcesos.PushBack(Proceso{Id: 0, Tiempo: 0})
-	listaProcesos.PushBack(Proceso{Id: 1, Tiempo: 0})
-	listaProcesos.PushBack(Proceso{Id: 2, Tiempo: 0})
-	listaProcesos.PushBack(Proceso{Id: 3, Tiempo: 0})
-	listaProcesos.PushBack(Proceso{Id: 4, Tiempo: 0})
-	// Hilo de los procesos
-	go incrementoProceso(listaProcesos)
+	// listaProcesos.PushBack(Proceso{Id: 0, Tiempo: 0})
+	// listaProcesos.PushBack(Proceso{Id: 1, Tiempo: 0})
+	// listaProcesos.PushBack(Proceso{Id: 2, Tiempo: 0})
+	// listaProcesos.PushBack(Proceso{Id: 3, Tiempo: 0})
+	// listaProcesos.PushBack(Proceso{Id: 4, Tiempo: 0})
+	// // Hilo de los procesos
+	// go incrementoProceso(listaProcesos)
 	// Hilo del servidor
-	go server()
+	go server(listaProcesos)
 	// Condicionante de paro
 	var input string
 	fmt.Scanln(&input)
