@@ -19,15 +19,15 @@ func cliente(p *Proceso) {
 		fmt.Println(err)
 		return
 	}
+	// Se captura el proceso enviado por el servidor
 	fmt.Println("¡Conexión!")
-	// Se captura el proceso enviado
 	err = gob.NewDecoder(c).Decode(&p)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Mensaje: ", p)
+		incremento(p)
 	}
-	go incremento(p)
 }
 
 func incremento(p *Proceso) {
@@ -42,7 +42,20 @@ func incremento(p *Proceso) {
 		fmt.Println("+--------------------------------------------+")
 		time.Sleep(time.Second / 2)
 	}
-	fmt.Println("Hola")
+}
+
+func enviarProceso(p *Proceso) {
+	// Conexión inicial entre cliente servidor
+	c, err := net.Dial("tcp", ":9998")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = gob.NewEncoder(c).Encode(&p)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func main() {
@@ -50,5 +63,6 @@ func main() {
 	go cliente(&p)
 	var input string
 	fmt.Scanln(&input)
-	fmt.Println("Enviando... ", p)
+	// Conexión inicial entre cliente servidor
+	enviarProceso(&p)
 }

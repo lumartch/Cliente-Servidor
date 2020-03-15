@@ -58,8 +58,31 @@ func handleCliente(c net.Conn, p Proceso, listaProcesos *list.List) {
 		fmt.Println(err)
 		return
 	}
-	//
-	c.Close()
+}
+
+func serverRetornoProceso(listaProcesos *list.List) {
+	s, err := net.Listen("tcp", ":9998")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for {
+		c, err := s.Accept()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		var p Proceso
+		err = gob.NewDecoder(c).Decode(&p)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("Mensaje: ", p)
+			listaProcesos.PushBack(p)
+		}
+		c.Close()
+	}
+	s.Close()
 }
 
 func main() {
@@ -74,6 +97,8 @@ func main() {
 	go incrementoProceso(&listaProcesos)
 	// Hilo del servidor
 	go server(&listaProcesos)
+	//
+	go serverRetornoProceso(&listaProcesos)
 	// Condicionante de paro
 	var input string
 	fmt.Scanln(&input)
