@@ -1,3 +1,8 @@
+// Luis Fernando Martínez Castellanos
+// 216787787
+// Sistemas concurrentes y distribuidos
+// L - M  7AM
+
 package main
 
 import (

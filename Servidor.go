@@ -1,3 +1,8 @@
+// Luis Fernando Martínez Castellanos
+// 216787787
+// Sistemas concurrentes y distribuidos
+// L - M  7AM
+
 package main
 
 import (
@@ -78,7 +83,9 @@ func serverRetornoProceso(listaProcesos *list.List) {
 			fmt.Println(err)
 		} else {
 			fmt.Println("Mensaje: ", p)
-			listaProcesos.PushBack(p)
+			if p.Id != 0 {
+				listaProcesos.PushBack(p)
+			}
 		}
 		c.Close()
 	}
@@ -88,11 +95,11 @@ func serverRetornoProceso(listaProcesos *list.List) {
 func main() {
 	// Inicialización de la lista
 	var listaProcesos list.List
-	listaProcesos.PushBack(Proceso{Id: 0, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 1, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 2, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 3, Tiempo: 0})
 	listaProcesos.PushBack(Proceso{Id: 4, Tiempo: 0})
+	listaProcesos.PushBack(Proceso{Id: 5, Tiempo: 0})
 	// Hilo de los procesos
 	go incrementoProceso(&listaProcesos)
 	// Hilo del servidor
